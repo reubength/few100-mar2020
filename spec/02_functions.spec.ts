@@ -61,5 +61,107 @@ describe('array methods', () => {
 
         });
     });
+    describe('scalar array methods', () => {
+        describe('testing membership', () => {
+            it('can see if every element of an array matches a criteria', () => {
+                const allEven = numbers.every(isEven); // C# Linq = 'All'
+                expect(allEven).toBe(false);
+            });
+            it('can see if any lement in an array matches a criteria', () => {
+                const anyEven = numbers.some(isEven); // C# linq - 'any'
+                expect(anyEven).toBe(true);
+            });
+        });
+        describe('using reduce', () => {
+            it('boiling down a list of things to a single value', () => {
+                const total = numbers.reduce((s, n) => s + n);
+                expect(total).toBe(45);
+                const total2 = numbers.reduce((s, n) => s + n, 100); // 100 here is the "seed" or initial state
+                expect(total2).toBe(145);
+            });
+        });
+        describe('practice', () => {
+            interface CartItem {
+                name: string;
+                qty: number;
+                price: number;
+            }
+            const cart: CartItem[] = [
+                { name: 'Eggs', qty: 1, price: 2.99 },
+                { name: 'Bread', qty: 3, price: 3.57 },
+                { name: 'Shampoo', qty: 2, price: 7.25 }
+            ];
+
+            interface ShippingInfo {
+                totalQty: number;
+                totalPrice: number;
+            }
+            it('cant you calculate the shipping info for the cart', () => {
+                const initialState: ShippingInfo = {
+                    totalPrice: 0,
+                    totalQty: 0
+                };
+
+                const shippingInfo: ShippingInfo = cart.reduce((state: ShippingInfo, cartItem: CartItem) => {
+                    const result = {
+                        totalQty: state.totalQty + cartItem.qty,
+                        totalPrice: state.totalPrice + (cartItem.qty * cartItem.price)
+                    };
+                    console.log({ state, result });
+                    return result;
+                }, initialState);
+                expect(shippingInfo.totalPrice).toBe((1 * 2.99) + (3 * 3.57) + (2 * 7.25)); // (1*2.99) + (3*3.57) + (2*7.25)
+                expect(shippingInfo.totalQty).toBe(6); // 1 + 3 + 2
+            });
+
+            describe('another practice', () => {
+                interface BowlingGame {
+                    playerName: string;
+                    score: number;
+                }
+                const scores: BowlingGame[] = [
+                    { playerName: 'Jeff', score: 127 },
+                    { playerName: 'Henry', score: 227 },
+                    { playerName: 'Violet', score: 118 }
+                ];
+                interface Results {
+                    highScorer: String;
+                    highScore: number;
+                    lowScorer: String;
+                    lowScore: number;
+                }
+
+                const ScorerInitial: Results = {
+                    highScorer: null,
+                    highScore: -1,
+                    lowScorer: null,
+                    lowScore: 301,
+
+                };
+                it('practice', () => {
+                    // figure out who has the highest score, who has the lowest score, and what the highest and lowest score are.
+                    // there are no ties. We don't believe in that, don't worry about.
+                    // 1. Design an interface that is what you want the result to be.
+                    // 2. Set the initial state as above.
+                    // 3. Profit!
+                    const results: Results = scores.reduce((state: Results, next: BowlingGame) => {
+                        return {
+                            highScorer: next.score > state.highScore ? next.playerName : state.highScorer,
+                            highScore: next.score > state.highScore ? next.score : state.highScore,
+                            lowScorer: next.score < state.lowScore ? next.playerName : state.lowScorer,
+                            lowScore: next.score < state.lowScore ? next.score : state.lowScore
+                        };
+                    }, ScorerInitial);
+
+                    expect(results.highScorer).toBe('Henry');
+                    expect(results.highScore).toBe(227);
+                    expect(results.lowScorer).toBe('Violet');
+                    expect(results.lowScore).toBe(118);
+
+                });
+            });
+
+        });
+    });
 });
 
